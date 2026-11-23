@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RubricLens · 挑战自评透镜</title>
+<meta name="description" content="粘贴评分 rubric 与证据清单，AI 按三阶段流水线解析维度、映射证据、给出分数区间与扣分风险，可导出 Markdown 自评报告。" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span><b>RubricLens</b><span class="tag">挑战自评透镜</span></div>
+    <p class="lead">提交前 30 秒自查：<b>rubric → 证据 → 分数区间 + 扣分风险 + 修复动作</b>。AI 只做判断，分值上限与总分由确定性代码计算。</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card grid-input">
+    <div class="card-hd">
+      <h2>1 · 输入</h2>
+      <div class="hd-actions">
+        <button id="btn-sample" class="ghost">载入示例（用 C6 的 rubric 自评本项目）</button>
+        <button id="btn-clear" class="ghost">清空</button>
+      </div>
+    </div>
+
+    <label class="fld"><span>挑战目标（一句话）</span>
+      <textarea id="challenge" rows="2" placeholder="例如：构建真实可运行的产品，不是 demo。"></textarea>
+    </label>
+
+    <div class="two">
+      <label class="fld"><span>评分 rubric（维度 · 分值 · 正/负信号）</span>
+        <textarea id="rubric" rows="10" placeholder="粘贴评分说明原文，越原始越好。"></textarea>
+      </label>
+      <label class="fld"><span>证据清单（文件 · 字节数 · 关键内容 · 链接 · 实跑结果）</span>
+        <textarea id="evidence" rows="10" placeholder="粘贴你要提交的东西：仓库文件树、测试输出、截图说明、链接。"></textarea>
+      </label>
+    </div>
+
+    <div class="fld">
+      <span>AI 通道</span>
+      <div class="row">
+        <select id="provider"></select>
+        <input id="model" class="mini" placeholder="模型" />
+        <input id="base" class="wide" placeholder="自定义 base（OpenAI 兼容，含 /v1）" />
+        <input id="key" class="mini" placeholder="API Key（本地保存，不上传）" type="password" />
+      </div>
+      <p class="hint" id="provider-hint"></p>
+    </div>
+
+    <div class="row-cta">
+      <button id="btn-run" class="primary">开始三阶段分析</button>
+      <button id="btn-replay" class="ghost">回放最近一次实跑结果（离线可用）</button>
+      <span id="err" class="err" role="alert"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-hd"><h2>2 · 流水线</h2><span class="hint" id="pipe-note">阶段之间是依赖关系：后一阶段的输入是前一阶段的输出。</span></div>
+    <ol class="stages" id="stages">
+      <li data-stage="rubric"><b>解析评分维度</b><em>待运行</em></li>
+      <li data-stage="evidence"><b>证据逐条映射</b><em>待运行</em></li>
+      <li data-stage="report"><b>评分与扣分风险</b><em>待运行</em></li>
+    </ol>
+  </section>
+
+  <section class="card" id="result" hidden>
+    <div class="card-hd">
+      <h2>3 · 自评报告</h2>
+      <div class="hd-actions">
+        <button id="btn-export" class="ghost">导出 Markdown</button>
+        <button id="btn-json" class="ghost">复制 JSON</button>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><span>预估总分</span><b id="kpi-score">–</b><em id="kpi-ratio"></em></div>
+      <div class="kpi"><span>证据覆盖</span><b id="kpi-cov">–</b><em id="kpi-claims"></em></div>
+      <div class="kpi wide"><span>结论</span><b id="kpi-verdict">–</b></div>
+      <div class="kpi"><span>耗时 / 模型</span><b id="kpi-meta">–</b></div>
+    </div>
+
+    <div id="dims" class="dims"></div>
+
+    <div class="two">
+      <div class="block"><h3>会打回的问题</h3><ul id="blockers" class="plain"></ul></div>
+      <div class="block"><h3>速赢动作</h3><ul id="quickwins" class="plain"></ul></div>
+    </div>
+
+    <div class="block">
+      <h3>追问（针对这份报告继续对话）</h3>
+      <div class="row">
+        <input id="followup" class="wide" placeholder="例如：哪个维度最值得先补？给我一个 30 分钟的执行顺序。" />
+        <button id="btn-ask" class="primary small">发送</button>
+      </div>
+      <div id="qa" class="qa"></div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p>RubricLens v1.0.0 · 纯静态前端（无后端、无账号、数据不离开浏览器）· 代码与证据见仓库 README。</p>
+    <p class="hint">默认公共通道由 Pollinations 提供免密钥推理；若网络受限，可切换到本机 Ollama（<code>OLLAMA_ORIGINS=* ollama serve</code>）。</p>
+  </footer>
+</main>
+
+<script src="app/core.js"></script>
+<script src="app/sample.js"></script>
+<script src="app/ui.js"></script>
+</body>
+</html>

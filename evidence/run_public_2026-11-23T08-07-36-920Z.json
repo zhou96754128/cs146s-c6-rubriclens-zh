@@ -1,0 +1,81 @@
+{
+  "channel": "public",
+  "provider": {
+    "id": "public",
+    "base": "https://text.pollinations.ai/openai",
+    "model": "openai"
+  },
+  "startedAt": "2026-11-23T08:07:27.512Z",
+  "elapsedMs": 9410,
+  "input": {
+    "challenge": "构建真实可运行的产品，不是 demo：完整 Web Application，接入 AI，部署上线、任何人打开链接都能用。",
+    "rubricBytes": 1260,
+    "evidenceBytes": 1054
+  },
+  "stageLog": [
+    {
+      "stage": "rubric",
+      "state": "running"
+    },
+    {
+      "stage": "rubric",
+      "state": "done",
+      "ms": 7193,
+      "model": "gpt-oss-20b"
+    },
+    {
+      "stage": "evidence",
+      "state": "running"
+    }
+  ],
+  "error": "HTTP 402 · {\"status\":402,\"success\":false,\"error\":{\"code\":\"FREE_LIMIT\",\"message\":\"Free limit reached: 1 reply every 45 seconds per IP. Retry after 38s, or get unlimited replies with a pollen key at https://enter.",
+  "final": null,
+  "rawModelOutputs": [],
+  "results": [
+    {
+      "name": "extractJson 处理 ```json 围栏",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "extractJson 忽略前导寒暄",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "extractJson 修复尾随逗号",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "extractJson 对非 JSON 明确报错",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "分值上限由代码收口（999 → 25）",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "模型漏掉的维度按 0 分并标记",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "总分等于各维度收口后之和",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "模型编造的多余维度不计入",
+      "pass": true,
+      "extra": ""
+    },
+    {
+      "name": "三阶段全部完成（无异常）",
+      "pass": false,
+      "extra": "HTTP 402 · {\"status\":402,\"success\":false,\"error\":{\"code\":\"FREE_LIMIT\",\"message\":\"Free limit reached: 1 reply every 45 seconds per IP. Retry after 38s, or get unlimited replies with a pollen key at https://enter."
+    }
+  ]
+}
