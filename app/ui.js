@@ -235,5 +235,14 @@
       $("#pipe-note").textContent = "这是已保存的真实模型输出回放（离线可看），不是本次新调用。";
     });
     resetStages();
+    // 深链：...#replay 直接载入示例并回放已保存的真实实跑结果（便于分享链接与截图）
+    if (typeof location !== "undefined" && /(^|#)replay/.test(location.hash)) {
+      var q = window.RL_SAMPLE || {};
+      if (q.replay) {
+        $("#btn-replay").click();
+        var box = document.getElementById("result");
+        if (box && box.scrollIntoView) box.scrollIntoView();
+      }
+    }
   });
 })();
