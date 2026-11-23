@@ -8,6 +8,16 @@
 - AI 只负责「判断」，**分值上限、缺维补零、总分** 一律由确定性代码计算，不让模型自报分数
 - 自带离线「回放最近一次实跑结果」，没网也能看完整报告长什么样
 
+## 在线地址与仓库
+
+| 用途 | 链接 |
+|---|---|
+| 应用（任何人打开即用，无需安装） | https://zhou96754128.github.io/cs146s-c6-rubriclens-zh/ |
+| 源码仓库 | https://github.com/zhou96754128/cs146s-c6-rubriclens-zh |
+| 直接进回放（深链，离线可看） | https://zhou96754128.github.io/cs146s-c6-rubriclens-zh/#replay |
+
+本地跑：见下方「本地运行」；自检：见「自检怎么跑」。demo 截图在 `demo/`，逐项说明在 `Zhouruoying_C6_demo走查.md`。
+
 ## 为什么值得做（问题来自真实痛点）
 
 课程/项目提交的评分 rubric 通常是几百字的自然语言，学生读完之后**无法把它翻译成「我这份材料的哪一句对应哪一条要求」**。常见失败模式有三种：
@@ -119,6 +129,20 @@ node tools/gen_sample.mjs    # 重新生成 app/sample.js
 - 不做自动提交：工具只产出自评与修复建议，提交动作仍由人决定
 - 不做多文件批量分析：一次一份 rubric + 一份证据清单
 - 公共通道的限流与模型漂移不受我们控制，关键场景建议切本地 Ollama 或自备 key
+
+## demo 与截图
+
+`demo/01_首屏.png`、`demo/02_回放报告.png` 由**本仓库已提交的这份字节**在本地起站（`python3 -m http.server 8899`）后经 CDP 驱动 Edge 截取，不是另一份构建的快照。回放页读回的实测值：总分 `45 / 100`、得分率 `45%`、覆盖 `20%`、`强 1 · 部分 2 · 缺失 7`、5 个维度、6 条风险（1 条红旗 / 2 条速赢），与 `evidence/latest.json` 一致。逐项说明见 `Zhouruoying_C6_demo走查.md`。
+
+**本次没有录屏**：交互（点回放、切通道、导出 JSON）靠静态截图 + DOM 断言佐证，不复现"动态录制"的假象。
+
+## 自检怎么跑
+
+```bash
+node tools/gen_sample.mjs     # 由真实文件 + 真实实跑证据重生成 app/sample.js（缺证据会告警，不静默写 null）
+node tools/verify_sample.mjs  # 20 条断言：回放数据与 render() 字段契约一致
+node tools/verify_ai.mjs      # 真实模型跑完整流水线，原始响应落盘 evidence/
+```
 
 ## 许可
 

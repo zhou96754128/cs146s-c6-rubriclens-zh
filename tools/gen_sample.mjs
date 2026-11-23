@@ -48,12 +48,41 @@ const EVIDENCE = [
   "无账号、无后端、无密钥硬编码；用户输入不上传第三方存储。"
 ].join("\n");
 
+// 回放数据：直接取最近一次真实实跑证据（evidence/latest.json），不手写、不编造
+const EV_PATH = path.join(REPO, "evidence/latest.json");
+let replay = null;
+if (fs.existsSync(EV_PATH)) {
+  const ev = JSON.parse(fs.readFileSync(EV_PATH, "utf8"));
+  const f = ev && ev.final;
+  if (f && f.maxTotal) {
+    replay = {
+      total: f.total,
+      maxTotal: f.maxTotal,
+      ratio: f.total / f.maxTotal,
+      coverage: f.coverage,
+      claims: f.claims,
+      verdict: f.verdict,
+      rows: f.rows,
+      blockers: f.blockers,
+      quickWins: f.quickWins,
+      elapsedMs: ev.elapsedMs,
+      log: (ev.stageLog || [])
+        .filter(function (s) { return s.state === "done"; })
+        .map(function (s) { return { stage: s.stage, model: s.model || "", ms: s.ms || 0 }; }),
+      sourceRun: path.basename(EV_PATH)
+    };
+  }
+}
+if (!replay) {
+  console.error("警告：未找到 evidence/latest.json 的有效 final，sample.replay 将为 null（回放功能不可用）");
+}
+
 const body = `/* 自动生成：node tools/gen_sample.mjs（不要手改）。示例数据直接来自本仓库真实文件。 */
 window.RL_SAMPLE = {
   challenge: ${JSON.stringify(CHALLENGE)},
   rubric: ${JSON.stringify(RUBRIC)},
   evidence: ${JSON.stringify(EVIDENCE)},
-  replay: null,
+  replay: ${JSON.stringify(replay)},
   generatedAt: ${JSON.stringify(new Date().toISOString())},
   source: { files: ${files.length}, bytes: ${totalBytes} }
 };
